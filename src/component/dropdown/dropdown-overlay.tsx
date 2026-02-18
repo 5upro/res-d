@@ -7,7 +7,7 @@ import {
 } from "react-native"; 
 import { DropdownOverlayProps } from "@/types/overlay";
 
-const DropdownOverlay = ({ data, text, position, onClose, style }: DropdownOverlayProps) => {
+const DropdownOverlay = ({ data, text, position, textStyle, buttonStyle, style, onClose }: DropdownOverlayProps) => {
 	return(
 		<View
 			style={StyleSheet.absoluteFill}
@@ -32,10 +32,17 @@ const DropdownOverlay = ({ data, text, position, onClose, style }: DropdownOverl
 						style={[
 							styles.button,
 							{ backgroundColor: item.color },
+                            buttonStyle,
 						]}
 						onPress={() => onClose(item)}
 					>
-						<Text style={styles.buttonText}>{text ? text[index] : ""}</Text>
+						<Text style={[
+								styles.buttonText,
+                                textStyle
+							]}
+						>
+							{text ? text[index] : ""}
+						</Text>
 					</Pressable>
 				))}	
 			</View>

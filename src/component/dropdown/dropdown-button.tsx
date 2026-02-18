@@ -12,7 +12,7 @@ import {
 } from 'react-native-safe-area-context';
 import { DropdownButtonProps } from '@/types/overlay';
 
-const DropdownButton = ({index, text, style, onOpen} : DropdownButtonProps) => {
+const DropdownButton = ({index, text, textStyle, style, onOpen} : DropdownButtonProps) => {
 	const buttonRef = useRef<View | null>(null);
 	const insets = useSafeAreaInsets();
 	const handlePress = () => {
@@ -33,7 +33,9 @@ const DropdownButton = ({index, text, style, onOpen} : DropdownButtonProps) => {
 				style
 			]}
 		>
-			<Text style={styles.buttonText}>{text}</Text>
+			<Text style={[styles.buttonText, textStyle]}>
+				{text}
+			</Text>
 		</Pressable>
 	);
 }

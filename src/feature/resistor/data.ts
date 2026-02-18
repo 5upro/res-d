@@ -9,7 +9,7 @@ export const bandSize: OptionData[] = [
     {color: "#6C6CAA", value: 6},
 ];
 
-export const digits: OptionData[] = [
+export const digit: OptionData[] = [
 	{color: "#000000", value: 0},
     {color: "#8B4513", value: 1},
     {color: "#CC0000", value: 2},
@@ -23,7 +23,7 @@ export const digits: OptionData[] = [
 ];
 
 export const multiplier: OptionData[] = [
-	...digits,
+	...digit,
     {color: "#FFD700", value: -1},
     {color: "#C0C0C0", value: -2},
     {color: "#FFC0CB", value: -3},

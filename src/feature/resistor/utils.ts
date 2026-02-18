@@ -1,54 +1,70 @@
 import { OptionData } from "@/types/overlay";
 import { 
-	digits, 
+	digit, 
 	multiplier, 
 	tolerance, 
 	tcr, 
 	bandSize 
 } from "@/feature/resistor/data";
 
-function Sum(n: number[]): number {
-	return n.reduce((a, b) => a + b, 0);
-}
+// CONSTANTS 
+const Gohm = 1_000_000_000;
+const Mohm = 1_000_000;
+const Kohm = 1_000;
+const EMPTY: OptionData[] = [];
+const firstDigit = digit.slice(1);
+const mapper: Record<number, OptionData[][]> = {
+	3: [ firstDigit, digit, multiplier ],
+	4: [ firstDigit, digit, multiplier, tolerance ],
+	5: [ firstDigit, digit, digit, multiplier, tolerance ],
+	6: [ firstDigit, digit, digit, multiplier, tolerance, tcr ],
+};
+
+//check if all values are valid
+const isValid = (n: number[]): boolean => {	
+	for(let i = 0; i < n.length; i++) 
+        if(n[i] === -9) return false;
+    return true;
+};
+const hasDecimal = (n: number): boolean => n % 1 !== 0;							//returns true if n has decimal
+const decORint = (n: number): string => hasDecimal(n) ? n.toFixed(2) : `${n}`;	//returns n or n.toFixed(2) if n has decimal
 
 export const dataSetSelector = (type: number, index : number) : OptionData[] => {
-	if(index===0 || index===1 || (index===2 && type>=5)) return digits;
-	if((index===2 && type<=4) ||(index===3 && type>=5)) return multiplier;
-	if((index===3 && type===4) || (index===4)) return tolerance;
-	if(index===5) return tcr;
 	if(index===999) return bandSize;
-	return [];
+	return mapper[type]?.[index] ?? EMPTY;
 }
 
 export const formatter = (n: number): string => {
-    if(n >= 1000000000) return `${(n/1000000000).toFixed(2)} GΩ`;
-	if(n >= 1000000) return `${(n/1000000).toFixed(2)} MΩ`;
-    if(n >= 1000) return `${(n/1000).toFixed(2)} kΩ`;
-    return `${n}Ω`;
+    if(n >= Gohm) return `${decORint(n/Gohm)} GΩ`;
+	if(n >= Mohm) return `${decORint(n/Mohm)} MΩ`;
+    if(n >= Kohm) return `${decORint(n/Kohm)} kΩ`;
+    return `${n} Ω`;
 }
 
 export const parser = (type: number, n: number[]): string[] => {
-	if(Sum(n)>0){
-		let val: number=0, valList: number[] = [];
-		let retVal: string[] = []; 
-		const digCount = Math.ceil(type/2);
+	if(!isValid(n)) return ["--"];
+	
+	let val = 0;
+	let retList: string[] = []; 
+	const digCount = Math.ceil(type/2);
 
-		for(let i=0; i<digCount; i++){
-			val+= n[digCount-i-1] * Math.pow(10, i);
-		}
+	for(let i=0; i<digCount; i++){
+		val = val * 10 + n[i];
+	}
 
-		val*= Math.pow(10, n[digCount]);
-		valList = [ ...valList, val];
-		if(type!==3){
-			const tolDiff = (val/100 * n[digCount+1]);
-			valList = [ ...valList, (val - tolDiff)];
-			valList = [ ...valList, (val + tolDiff)];
-		}
+	val *= 10 ** n[digCount];
 
-		for(let i=0; i<valList.length; i++){
-			retVal = [...retVal, formatter(valList[i])];
-		}
-		return retVal;
-	} 
-	return ["--"];
+	if(type === 3){
+		retList.push(formatter(val));
+	}
+	else {
+		const tolDiff = (val/100 * n[digCount+1]);
+		retList.push(
+            formatter(val),
+			formatter(val - tolDiff),
+            formatter(val + tolDiff)
+		);
+	}
+
+	return retList;
 }

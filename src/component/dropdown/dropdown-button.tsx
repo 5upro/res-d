@@ -3,27 +3,14 @@ import React, {
 } from 'react';
 import { 
 	StyleSheet, 
-	StyleProp, 
 	View, 
-	ViewStyle, 
 	Text, 
 	Pressable, 
 } from 'react-native';
 import { 
     useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-
-export interface DropdownButtonProps {
-	index: number;
-	text?: string|number;
-	style?: StyleProp<ViewStyle>;
-	onOpen: (pos: Position, index: number) => void;
-}
-
-export type Position = {
-	top: number;
-	left: number;
-}
+import { DropdownButtonProps } from '@/types/overlay';
 
 const DropdownButton = ({index, text, style, onOpen} : DropdownButtonProps) => {
 	const buttonRef = useRef<View | null>(null);

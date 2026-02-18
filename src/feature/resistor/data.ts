@@ -1,7 +1,4 @@
-export type OptionData = {
-	color: string;
-	value: number;
-}
+import { OptionData } from "@/types/overlay";
 
 export const defaultValue: OptionData = {color: "#6C6CAA", value: -9};
 

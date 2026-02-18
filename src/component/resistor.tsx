@@ -2,10 +2,7 @@ import {
 	StyleSheet, 
 	View, 
 } from 'react-native';
-
-type ResistorTypes= {
-	bandColor?: string[];
-}
+import { ResistorTypes } from '@/types/resistor';
 
 const Resistor = ({
 	bandColor = [
@@ -26,15 +23,10 @@ const Resistor = ({
 							key={index} 
 							style={[
 								styles.band, 
-								{ backgroundColor: bandColor[index] }
+								{ backgroundColor: color }
 							]} 
 						/>					
 					))}
-					{/* <View style={[styles.band0, { backgroundColor: band0 }]} /> */}
-					{/* <View style={[styles.band1, { backgroundColor: band1 }]} /> */}
-					{/* <View style={[styles.band2, { backgroundColor: band2 }]} /> */}
-					{/* <View style={[styles.multi, { backgroundColor: multi }]} /> */}
-					{/* <View style={[styles.toln, { backgroundColor: toln }]} /> */}
 				</View>
 			</View>
 		</View>
@@ -62,7 +54,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-evenly',
 		flexDirection: 'row',
-		// gap: 15,
 		backgroundColor: '#ADAD90'
 	},
 	band: {

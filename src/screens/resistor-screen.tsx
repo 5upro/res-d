@@ -1,45 +1,24 @@
 import React, { 
 	useState, 
 	useEffect, 
-	useRef, 
 } from 'react';
 import { 
 	StyleSheet, 
 	View, 
 	Text, 
-	Pressable, 
 } from 'react-native';
-import {
-	useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import Resistor from "../../comp/resistor";
-import DropdownButton, { 
-	Position 
-} from '../../comp/dropdown/dropdown-button';
-import DropdownOverlay from '../../comp/dropdown/dropdown-overlay';
-import { Parser } from "../../comp/temp";
-import { 
-	OptionData,
-	bandSize, 
-	defaultValue, 
-	digits, 
-	multiplier, 
-	tolerance, 
-	tcr, 
-} from '../../data/resistor';
-
-const dataSetSelector = (type: number, index : number) : OptionData[] => {
-	if(index===0 || index===1 || (index===2 && type>=5)) return digits;
-	if((index===2 && type<=4) ||(index===3 && type>=5)) return multiplier;
-	if((index===3 && type===4) || (index===4)) return tolerance;
-	if(index===5) return tcr;
-	if(index===999) return bandSize;
-}
+import { OptionData, Position } from '@/types/overlay';
+import { defaultValue, bandSize } from '@/feature/resistor/data';
+import { dataSetSelector, parser } from '@/feature/resistor/utils';
+import Resistor from '@/component/resistor';
+import DropdownButton from '@/component/dropdown/dropdown-button';
+import DropdownOverlay from '@/component/dropdown/dropdown-overlay';
 
 const typeLable: string[] = ["3-Band", "4-Band", "5-Band", "6-Band"];
 
-const ResistorTab = () => {
+const ResistorScreen = () => {
 	const [type, setType] = useState<number>(bandSize[0].value);
 	const [dropdown, setDropdown] = useState<boolean>(false);
 	const [position, setPosition] = useState<Position>({top: 0, left: 0});
@@ -57,19 +36,19 @@ const ResistorTab = () => {
 	}, [type]);
 
 
-	const updateBand = (index : number, item : OptionData) => {
+	const updateBand = (index: number, item: OptionData) => {
 		const newBand = [...band];
 		newBand[index] = item;
 		setBand(newBand);
 	}
 
-	const handleDropdownPress = (pos : Position, index : number) => {
+	const handleDropdownPress = (pos: Position, index : number) => {
 		setOverlayIndex(index);
 		setPosition(pos);
 		setDropdown(true);
 	}
 
-	const handleDropdownClose = (item : OptionData) => {
+	const handleDropdownClose = (item: OptionData) => {
 		if(overlayIndex === 999 && item.value !== -9) {
 			console.log("dropdown closed");
 			setType(item.value);
@@ -82,9 +61,7 @@ const ResistorTab = () => {
 	return(
 		<View style={[
 			styles.container,
-			{
-				marginBottom: insets.bottom
-			}
+			{ marginBottom: insets.bottom }
 		]}>
 			<View style={[
 				styles.header,
@@ -107,7 +84,7 @@ const ResistorTab = () => {
 					bandColor={band.map((item) => item.color)}
 				/>
 				<View style={styles.bandValueContainer}>
-					{Parser(type, band.map((item) => item.value)).map((item, index) => (
+					{parser(type, band.map((item) => item.value)).map((item, index) => (
 						<Text 
 							key={index} 
 							style={styles.bandText}
@@ -144,7 +121,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		width: '100%',
 		alignItems: 'center',
-		justifyContent: 'start',
+		justifyContent: 'flex-start',
 		backgroundColor: '#D9D9D9',
 		gap: 20,
 	},
@@ -190,7 +167,7 @@ const styles = StyleSheet.create({
 		width: '80%',
 		flexDirection: 'row',
 		justifyContent: 'center',
-		gap: 10
+		gap: 5, 
 	},
 	button: {
 		width: 100,
@@ -203,4 +180,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default ResistorTab;
+export default ResistorScreen;

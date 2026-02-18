@@ -1,22 +1,11 @@
 import React from "react";
 import { 
 	StyleSheet,
-	StyleProp,
 	View, 
-	ViewStyle,
 	Pressable, 
 	Text, 
 } from "react-native"; 
-import { Position } from "./comp/dropdown";
-import { OptionData } from "../../data/resistor";
-
-export type DropdownOverlayProps = {
-	data: OptionData[];
-	text?: string[];
-	position: Position;
-	onClose: (currentData: OptionData) => void;
-	style?: StyleProp<ViewStyle>; 
-}
+import { DropdownOverlayProps } from "@/types/overlay";
 
 const DropdownOverlay = ({ data, text, position, onClose, style }: DropdownOverlayProps) => {
 	return(

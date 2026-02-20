@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { OptionData, Position } from '@/types/overlay';
+import { Color } from '@/assets/color';
 import { defaultValue, bandSize } from '@/feature/resistor/data';
 import { dataSetSelector, parser } from '@/feature/resistor/utils';
 import Resistor from '@/component/resistor';
@@ -27,9 +28,9 @@ const ResistorScreen = () => {
 	);
 	const [overlayIndex, setOverlayIndex] = useState<number>(0);
 	const insets = useSafeAreaInsets();
+	const finalValues = parser(type, band.map((item) => item.value))
 
 	useEffect(() => {
-		console.log("effect");
 		setBand(
 			Array.from({length: type}, () => ({ ...defaultValue }))
 		);
@@ -44,13 +45,12 @@ const ResistorScreen = () => {
 
 	const handleDropdownPress = (pos: Position, index : number) => {
 		setOverlayIndex(index);
-		setPosition(pos);
+		setPosition({ top: pos.top, left: pos.left });
 		setDropdown(true);
 	}
 
 	const handleDropdownClose = (item: OptionData) => {
 		if(overlayIndex === 999 && item.value !== -9) {
-			console.log("dropdown closed");
 			setType(item.value);
 		}
 		else if(item.value !== -9) {
@@ -61,53 +61,64 @@ const ResistorScreen = () => {
 	return(
 		<View style={[
 			styles.container,
-			{ marginBottom: insets.bottom }
-		]}>
-			<View style={[
-				styles.header,
-				{
-                    paddingTop: insets.top,
-				}
-			]}>
+			{ paddingTop: insets.top }
+		]}
+		>
+			<View style={styles.header}>
 				<Text style={styles.headerText}>Resistor Calculator</Text>
 			</View>
-			<View style={styles.resistorContainer}>
-				<DropdownButton
-					index={999}
-					text={`${type}-Band`}
-					style={[
-                        styles.button,
-					]}
-					onOpen={handleDropdownPress}
-				/>
-				<Resistor
-					bandColor={band.map((item) => item.color)}
-				/>
-				<View style={styles.bandValueContainer}>
-					{parser(type, band.map((item) => item.value)).map((item, index) => (
-						<Text 
-							key={index} 
-							style={styles.bandText}
-						>
-							{item}
-						</Text>
-					))}
-				</View>
-			</View>
-			<View style={styles.dropdownContainer}>
-				{band.map((item, index) => (
+			<View style={styles.contentContainer}>
+				<View style={styles.resistorContainer}>
 					<DropdownButton
-						key={index}
-						index={index}
-						style={{backgroundColor: item.color}}
+						index={999}
+						text={`${type}-Band`}
+						textStyle={{color: Color.secondary}}
+						style={styles.typeDropdownButton}
 						onOpen={handleDropdownPress}
 					/>
-				))}
+					<Resistor
+						bandColor={band.map((item) => item.color)}
+					/>
+					<View style={styles.valueContainer}>
+						<Text style={styles.mainValue}>{finalValues[0]}</Text>
+						{ type !== 3 &&
+							<View style={styles.tolnValueContainer}>
+								<View style={styles.minMaxContainer}>
+									<Text style={styles.tolnValueHeader}>Minimum</Text>
+									<Text style={styles.tolnValue}>{finalValues[1] ? finalValues[1] : "--"}</Text>
+								</View>
+								<View style={styles.minMaxContainer}>
+									<Text style={styles.tolnValueHeader}>Maximum</Text>
+									<Text style={styles.tolnValue}>{finalValues[2] ? finalValues[2] : "--"}</Text>
+								</View>
+							</View>
+						}
+						<Text style={styles.tipText}>{"Hold any calculated value to copy"}</Text>
+					</View>
+				</View>
+				<View style={styles.bandDropdownContainer}>
+					<View style={styles.bandDropdownButtonContainer}>
+						{band.map((item, index) => (
+							<DropdownButton
+								key={index}
+								index={index}
+								style={[
+									styles.bandDropdownButton,
+									{backgroundColor: item.color,}
+								]}
+								onOpen={handleDropdownPress}
+							/>
+						))}
+					</View>
+				</View>
 			</View>
 			{dropdown && 
 				<DropdownOverlay 
 					position={position} 
 					text={overlayIndex === 999 ? typeLable : [""]}
+					textStyle={overlayIndex === 999 ? styles.typeOverlayText : {}}
+					buttonStyle={overlayIndex === 999 ? styles.typeOverlayButton : {}}
+					style={overlayIndex === 999 ? styles.typeOverlay : {}}
 					data={dataSetSelector(type, overlayIndex)}
 					onClose={handleDropdownClose} 
 				/>
@@ -122,61 +133,121 @@ const styles = StyleSheet.create({
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'flex-start',
-		backgroundColor: '#D9D9D9',
-		gap: 20,
+		backgroundColor: Color.primary,
 	},
-    header: {
-        width: '100%',
-        backgroundColor: '#6C6CAA',
-        alignItems: 'center',
-        justifyContent: 'center',
-		borderRadius: 24,
-    },
-	headerText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-		color: '#D9D9D9',
-		marginBottom: 15,
-	},
-    resistorContainer: {
-        width: '100%',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-		marginVertical: 100,
-        gap: 20
-    },
-    bandValueContainer: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-    },
-    bandText: {
-		width: "30%",
-        textAlign: "center",
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#6C6CAA',
-		borderWidth: 2,
-        borderColor: '#6C6CAA66',
-        borderRadius: 10,
-        padding: 5
-    },
-	dropdownContainer: {
-		width: '80%',
-		flexDirection: 'row',
+	header: {
+		width: '100%',
+		height: 50,
+		alignItems: 'flex-start',
 		justifyContent: 'center',
-		gap: 5, 
+		paddingHorizontal: 10,
 	},
-	button: {
-		width: 100,
+	headerText: {
+		fontSize: 28,
+		fontWeight: 'bold',
+		color: Color.secondary,
+	},
+	contentContainer: {
+		flex: 1,
+		width: '100%',
+		padding: 10,
+		paddingTop: "15%",
+		justifyContent: 'flex-start',
+		backgroundColor: Color.secondary,
+		borderRadius: 20
+	},
+	resistorContainer: {
+		height: "40%",
+		width: '100%',
+		alignItems: 'center',
+		justifyContent: "flex-start",
+		gap: 15,
+	},
+	typeDropdownButton: {
+		width: 150,
+		height: 50,
+		padding: 5,
+		borderRadius: 15,
+		alignContent: 'center',
+		justifyContent: 'center',
+		backgroundColor: Color.primary,
+	},
+	typeOverlay: {
+		width: 150,
+		padding: 5,
+		gap: 5,
+		backgroundColor: Color.primary,
+	},
+	typeOverlayButton: {
+		width: "100%",
 		height: 40,
 		padding: 5,
-		borderWidth: 3,
-        borderColor: '#2F2F2F4A',
 		borderRadius: 10,
-		backgroundColor: '#6C6CAAD2',
+		alignContent: 'center',
+		justifyContent: 'center',
+		backgroundColor: Color.secondary,
+	},
+	typeOverlayText: {
+		color: Color.quaternary
+	},
+	valueContainer: {
+		flex: 1,
+		width: '100%',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+	},
+	tolnValueContainer: {
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		justifyContent: 'space-evenly',
+	},
+	minMaxContainer: {
+		width: '40%',
+		alignItems: 'center',
+	},
+	mainValue: {
+		width: "30%",
+		textAlign: "center",
+		fontSize: 24,
+		fontWeight: 'bold',
+		color: Color.quaternary,
+		borderRadius: 10,
+		paddingBottom: 5,
+	},
+	tolnValueHeader: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		color: Color.quinary,
+	},
+	tolnValue: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		color: Color.quaternary,
+		padding: 5,
+	},
+	tipText: {
+		fontSize: 16,
+		fontWeight: 'semibold',
+		color: Color.quinary,
+		padding: 5,
+	},
+	bandDropdownContainer: {
+		flex: 1,
+		width: "100%",
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		paddingVertical: 30
+	},
+	bandDropdownButtonContainer: {
+		width: "100%",
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+		backgroundColor: Color.secondary
+	},
+	bandDropdownButton: {
+		borderColor: "#00000037",
+		borderWidth: 2
 	}
 })
 

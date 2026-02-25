@@ -13,8 +13,8 @@ const App = () => {
 	return(
 		<SafeAreaProvider>
 			<StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-			{/* <ResistorScreen /> */}
-			<ComponentsScreen />
+			<ResistorScreen />
+			{/* <ComponentsScreen /> */}
 		</SafeAreaProvider>
 	);
 }

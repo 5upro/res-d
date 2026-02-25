@@ -1,3 +1,4 @@
+import React from 'react';
 import { 
 	StyleSheet, 
 	View, 
@@ -17,16 +18,19 @@ const Resistor = ({
 	return (
 		<View style={styles.container}>
 			<View style={styles.wire}>
+				<View style={styles.bodyBump}>
+					<View style={[styles.band, { backgroundColor: bandColor[0] }]}/>
+				</View>
 				<View style={styles.body}>
-					{bandColor.map((color, index) => (
-                        <View 
+					{bandColor.slice(1, (bandColor.length - 1)).map((color, index) => (
+						<View 
 							key={index} 
-							style={[
-								styles.band, 
-								{ backgroundColor: color }
-							]} 
-						/>					
+							style={[styles.band, { backgroundColor: color }]} 
+						/>
 					))}
+				</View>
+				<View style={styles.bodyBump}>
+					<View style={[styles.band, { backgroundColor: bandColor[bandColor.length - 1] }]}/>
 				</View>
 			</View>
 		</View>
@@ -43,17 +47,26 @@ const styles = StyleSheet.create({
 	wire: {
 		height: 5,
 		width: 300,
+		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: '#666666',
 	},
-	body: {
+	bodyBump: {
 		height: 100,
-		width: 200,
-		borderRadius: 10,
+		width: 50,
+		borderRadius: 13,
 		alignItems: 'center',
-		justifyContent: 'space-evenly',
+		justifyContent: 'center',
+		backgroundColor: '#ADAD90',
+	},
+	body: {
+		height: 80,
+		width: 100,
 		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-around',
+		overflow: 'hidden',
 		backgroundColor: '#ADAD90'
 	},
 	band: {

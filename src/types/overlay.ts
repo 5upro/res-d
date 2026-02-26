@@ -7,12 +7,12 @@ import {
 export type Position = {
 	top: number;
 	left: number;
-}
+};
 
 export type OptionData = {
 	color: string;
 	value: number;
-}
+};
 
 export type DropdownButtonProps = {
 	index: number;
@@ -20,7 +20,7 @@ export type DropdownButtonProps = {
 	textStyle?: StyleProp<TextStyle>;
 	style?: StyleProp<ViewStyle>;
 	onOpen: (pos: Position, index: number) => void;
-}
+};
 
 export type DropdownOverlayProps = {
 	data: OptionData[];
@@ -30,4 +30,4 @@ export type DropdownOverlayProps = {
 	buttonStyle?: StyleProp<ViewStyle>; 
 	style?: StyleProp<ViewStyle>; 
 	onClose: (currentData: OptionData) => void;
-}
+};

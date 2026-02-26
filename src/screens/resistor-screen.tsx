@@ -16,6 +16,8 @@ import { dataSetSelector, parser } from '@/feature/resistor/utils';
 import Resistor from '@/component/resistor';
 import DropdownButton from '@/component/dropdown/dropdown-button';
 import DropdownOverlay from '@/component/dropdown/dropdown-overlay';
+import MenuBar from '@/component/menu/menu-bar';
+import Menu from '@/component/menu/menu';
 
 const typeLable: string[] = ["3-Band", "4-Band", "5-Band", "6-Band"];
 
@@ -27,6 +29,7 @@ const ResistorScreen = () => {
 		Array.from({length: type}, () => ({ ...defaultValue }))
 	);
 	const [overlayIndex, setOverlayIndex] = useState<number>(0);
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const insets = useSafeAreaInsets();
 	const finalValues = parser(type, band.map((item) => item.value))
 
@@ -122,6 +125,11 @@ const ResistorScreen = () => {
 					data={dataSetSelector(type, overlayIndex)}
 					onClose={handleDropdownClose} 
 				/>
+			}
+			<MenuBar onPress={() => setIsMenuOpen(true)}/>
+
+			{isMenuOpen && 
+				<Menu onClose={() => setIsMenuOpen(false)}/>
 			}
 		</View>
 	);
@@ -248,7 +256,7 @@ const styles = StyleSheet.create({
 	bandDropdownButton: {
 		borderColor: "#00000037",
 		borderWidth: 2
-	}
+	},
 })
 
 export default ResistorScreen;
